@@ -5,6 +5,7 @@ import { BrutalistButton } from "@/frontend/components/ui/BrutalistButton";
 import { BrutalistInput } from "@/frontend/components/ui/BrutalistInput";
 import { useAuth } from "@/frontend/hooks/useAuth";
 import { GithubIcon } from "@/frontend/components/ui/GithubIcon";
+import { getApiUrl } from "@/frontend/config/api";
 import { X } from "lucide-react";
 
 interface AuthModalProps {
@@ -55,7 +56,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
         <div className="p-6 space-y-4">
           <a
-            href="/api/auth/github"
+            href={getApiUrl("/api/auth/github")}
             className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-black text-white font-mono font-bold text-xs uppercase border-2 border-black shadow-[3px_3px_0px_#EF4444] neo-press cursor-pointer"
           >
             <GithubIcon className="w-4 h-4" />

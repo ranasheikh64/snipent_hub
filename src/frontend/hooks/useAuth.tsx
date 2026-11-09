@@ -42,6 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     const data = await res.json();
     if (data.success) {
+      if (data.token) localStorage.setItem("devvault_token", data.token);
       setUser(data.user);
       return { success: true };
     }
@@ -56,6 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
     const data = await res.json();
     if (data.success) {
+      if (data.token) localStorage.setItem("devvault_token", data.token);
       setUser(data.user);
       return { success: true };
     }
@@ -63,6 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = async () => {
+    localStorage.removeItem("devvault_token");
     await fetch("/api/auth/me", { method: "POST" });
     setUser(null);
   };

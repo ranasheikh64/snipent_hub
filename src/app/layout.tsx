@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AuthProvider } from "@/frontend/hooks/useAuth";
+import { ApiInterceptor } from "@/frontend/components/layout/ApiInterceptor";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen bg-[#FDFBF7] text-[#0A0A0A] antialiased">
+        <ApiInterceptor />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
