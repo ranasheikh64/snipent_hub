@@ -1,9 +1,21 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
-export interface IBlogComment {
+export interface ICommentReply {
+  _id?: string;
   author: string;
   authorId: string;
   content: string;
+  likes: string[];
+  createdAt: Date;
+}
+
+export interface IBlogComment {
+  _id?: string;
+  author: string;
+  authorId: string;
+  content: string;
+  likes: string[];
+  replies: ICommentReply[];
   createdAt: Date;
 }
 
@@ -25,10 +37,20 @@ export interface IBlog extends Document {
   updatedAt: Date;
 }
 
+const CommentReplySchema = new Schema<ICommentReply>({
+  author: { type: String, required: true },
+  authorId: { type: String, required: true },
+  content: { type: String, required: true },
+  likes: [{ type: String }],
+  createdAt: { type: Date, default: Date.now },
+});
+
 const BlogCommentSchema = new Schema<IBlogComment>({
   author: { type: String, required: true },
   authorId: { type: String, required: true },
   content: { type: String, required: true },
+  likes: [{ type: String }],
+  replies: [CommentReplySchema],
   createdAt: { type: Date, default: Date.now },
 });
 

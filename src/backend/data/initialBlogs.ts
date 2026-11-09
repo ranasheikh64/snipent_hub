@@ -11,6 +11,8 @@ export const initialBlogs: BlogPost[] = [
     author: "Rana Sheikh",
     readTime: "6 min read",
     isPublished: true,
+    likes: [],
+    comments: [],
     createdAt: "2026-11-05",
     content: `
 ### Overview
@@ -32,6 +34,8 @@ Setting up Google Sign-In on Flutter requires configuring the Google Developer C
     author: "Rana Sheikh",
     readTime: "8 min read",
     isPublished: true,
+    likes: [],
+    comments: [],
     createdAt: "2026-11-07",
     content: `
 ### Why RevenueCat?
@@ -44,4 +48,3 @@ Handling StoreKit 2 and Google Play Billing directly leads to complicated receip
     `.trim(),
   },
 ];
-

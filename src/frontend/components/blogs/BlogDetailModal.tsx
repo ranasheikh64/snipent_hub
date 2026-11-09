@@ -1,18 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { BlogPost } from "@/frontend/types/blog";
 import { BlogInteract } from "./BlogInteract";
 import { X, Clock, User, Calendar } from "lucide-react";
+import { useAuth } from "@/frontend/hooks/useAuth";
 
 interface BlogDetailModalProps {
-  blog: (BlogPost & { _id?: string; likes?: string[] }) | null;
+  blog: BlogPost | null;
   onClose: () => void;
 }
 
 export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose }) => {
+  const { user } = useAuth();
   if (!blog) return null;
-  const blogId = (blog as any)._id || blog.id;
+  const blogId = blog.id;
+  const isLiked = user ? (blog.likes || []).includes(user.id) : false;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
@@ -45,7 +48,7 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
             ))}
           </div>
 
-          <BlogInteract blogId={blogId} initialLikes={blog.likes?.length || 0} />
+          <BlogInteract blogId={blogId} initialLikes={blog.likes?.length || 0} isLiked={isLiked} />
         </div>
       </div>
     </div>
