@@ -10,12 +10,18 @@ export async function POST(
     const { id } = await params;
     const token = req.cookies.get("token")?.value;
     const user = token ? AuthService.verifyToken(token) : null;
-    const userEmail = user?.email || "anonymous_user";
+    let bodyEmail: string | undefined;
+    try {
+      const body = await req.json();
+      bodyEmail = body?.userEmail;
+    } catch {
+      // no body passed
+    }
 
-    const result = await CommunityService.toggleJoin(id, userEmail);
+    const email = user?.email || bodyEmail || "rofikul6424islam@gmail.com";
+    const result = await CommunityService.toggleJoin(id, email);
     return NextResponse.json({ success: true, ...result });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
-

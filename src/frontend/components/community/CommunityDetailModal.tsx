@@ -5,7 +5,7 @@ import { CommunityItem } from "@/backend/data/initialCommunities";
 import { SnippetItem } from "@/frontend/types/snippet";
 import { CommunitySnippetList } from "./CommunitySnippetList";
 import { useAuth } from "@/frontend/hooks/useAuth";
-import { X, Users, Hash, Plus, Check, LogOut } from "lucide-react";
+import { X, Users, Hash, Plus, Check, LogOut, Loader2 } from "lucide-react";
 
 interface CommunityDetailModalProps {
   community: CommunityItem | null;
@@ -15,10 +15,7 @@ interface CommunityDetailModalProps {
 }
 
 export const CommunityDetailModal: React.FC<CommunityDetailModalProps> = ({
-  community,
-  onClose,
-  onOpenNewSnippet,
-  onMembershipChanged,
+  community, onClose, onOpenNewSnippet, onMembershipChanged,
 }) => {
   const { user } = useAuth();
   const [membersCount, setMembersCount] = useState(0);
@@ -30,16 +27,12 @@ export const CommunityDetailModal: React.FC<CommunityDetailModalProps> = ({
   useEffect(() => {
     if (!community) return;
     setMembersCount(community.membersCount);
-    const joined = Boolean(user?.email && community.members?.includes(user.email));
-    setIsMember(joined);
-
+    const local = JSON.parse(localStorage.getItem("snippethub_joined") || "[]");
+    setIsMember(Boolean((user?.email && community.members?.includes(user.email)) || local.includes(community.id) || local.includes(community.slug)));
     setLoadingSnippets(true);
-    const query = community.hashtag || community.slug;
-    fetch(`/api/snippets?q=${encodeURIComponent(query)}`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success) setSnippets(json.data);
-      })
+    const q = community.hashtag || community.slug;
+    fetch(`/api/snippets?q=${encodeURIComponent(q)}`)
+      .then((r) => r.json()).then((j) => { if (j.success) setSnippets(j.data); })
       .finally(() => setLoadingSnippets(false));
   }, [community, user]);
 
@@ -48,11 +41,19 @@ export const CommunityDetailModal: React.FC<CommunityDetailModalProps> = ({
   const handleToggleJoin = async () => {
     setLoadingJoin(true);
     try {
-      const res = await fetch(`/api/communities/${community.id}/join`, { method: "POST" });
+      const res = await fetch(`/api/communities/${community.id}/join`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userEmail: user?.email }),
+      });
       const data = await res.json();
       if (data.success) {
         setIsMember(data.isMember);
         setMembersCount(data.membersCount);
+        const local = JSON.parse(localStorage.getItem("snippethub_joined") || "[]");
+        const updated = data.isMember
+          ? Array.from(new Set([...local, community.id, community.slug]))
+          : local.filter((x: string) => x !== community.id && x !== community.slug);
+        localStorage.setItem("snippethub_joined", JSON.stringify(updated));
         onMembershipChanged?.();
       }
     } finally { setLoadingJoin(false); }
@@ -88,11 +89,12 @@ export const CommunityDetailModal: React.FC<CommunityDetailModalProps> = ({
             </div>
             <button
               onClick={handleToggleJoin} disabled={loadingJoin}
-              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border-2 border-black neo-press cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono font-bold uppercase border-2 border-black neo-press cursor-pointer transition-colors ${
                 isMember ? "bg-red-500 text-white hover:bg-red-600" : "bg-[#7C3AED] text-white hover:bg-[#6D28D9]"
               }`}
             >
-              {isMember ? (<><LogOut className="w-3.5 h-3.5" /> Leave Space</>) : (<><Check className="w-3.5 h-3.5" /> Join Space</>)}
+              {loadingJoin ? (<><Loader2 className="w-3.5 h-3.5 animate-spin" /> {isMember ? "Leaving..." : "Joining..."}</>) :
+               isMember ? (<><LogOut className="w-3.5 h-3.5" /> Leave Space</>) : (<><Check className="w-3.5 h-3.5" /> Join Space</>)}
             </button>
           </div>
 
