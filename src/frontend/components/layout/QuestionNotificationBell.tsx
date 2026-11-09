@@ -28,8 +28,13 @@ export const QuestionNotificationBell: React.FC<{
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 10000);
-    return () => clearInterval(interval);
+    const interval = setInterval(fetchNotifications, 5000);
+    const handleUpdate = () => fetchNotifications();
+    window.addEventListener("notifications_updated", handleUpdate);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("notifications_updated", handleUpdate);
+    };
   }, []);
 
   useEffect(() => {
@@ -51,7 +56,7 @@ export const QuestionNotificationBell: React.FC<{
     else router.push(`/?snippetId=${item.snippetId}&questionId=${item.questionId}`);
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  const unreadCount = notifications.filter(n => !n.isRead && n.answersCount === 0).length;
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -84,10 +89,10 @@ export const QuestionNotificationBell: React.FC<{
             ) : (
               notifications.map((n) => (
                 <button key={n.questionId} onClick={() => handleClickItem(n)}
-                  className={`w-full text-left p-3 hover:bg-[#F5F3FF] cursor-pointer block group ${!n.isRead ? "bg-purple-50/80 border-l-4 border-l-[#7C3AED]" : "bg-white"}`}>
+                  className={`w-full text-left p-3 hover:bg-[#F5F3FF] cursor-pointer block group ${!n.isRead && n.answersCount === 0 ? "bg-purple-50/80 border-l-4 border-l-[#7C3AED]" : "bg-white"}`}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[10px] font-black uppercase text-[#7C3AED] bg-white px-1.5 py-0.5 border border-[#7C3AED]/30 truncate max-w-[200px]">{n.snippetTitle}</span>
-                    <span className="text-[9px] font-mono text-neutral-400">{n.answersCount > 0 ? `${n.answersCount} ans` : "Needs answer"}</span>
+                    <span className="text-[9px] font-mono text-neutral-400">{n.answersCount > 0 ? `${n.answersCount} ans (answered)` : "Needs answer"}</span>
                   </div>
                   <p className="text-xs font-bold text-black group-hover:text-[#7C3AED] line-clamp-2">{n.questionContent}</p>
                   <div className="flex items-center justify-between mt-1 text-[10px] font-mono text-neutral-500">

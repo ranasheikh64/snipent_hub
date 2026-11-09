@@ -23,10 +23,17 @@ export async function POST(
   if (!content?.trim()) return NextResponse.json({ success: false, message: "Content required" }, { status: 400 });
 
   question.answers.push({
-    author: user.name, authorId: user.id,
-    content: content.trim(), createdAt: new Date(),
+    author: user.name,
+    authorId: user.id,
+    content: content.trim(),
+    createdAt: new Date(),
   });
+  // Mark question as read when answered
+  question.isRead = true;
   await snippet.save();
 
-  return NextResponse.json({ success: true, data: question.answers[question.answers.length - 1] }, { status: 201 });
+  return NextResponse.json({
+    success: true,
+    data: question.answers[question.answers.length - 1],
+  }, { status: 201 });
 }

@@ -28,6 +28,9 @@ export async function GET(req: NextRequest) {
 
     snippets.forEach((s: any) => {
       (s.questions || []).forEach((q: any) => {
+        const answersCount = (q.answers || []).length;
+        // If question already has answers, it is considered answered/read
+        const isRead = Boolean(q.isRead) || answersCount > 0;
         notifications.push({
           snippetId: s._id.toString(),
           snippetTitle: s.title,
@@ -35,8 +38,8 @@ export async function GET(req: NextRequest) {
           questionAuthor: q.author,
           questionContent: q.content,
           createdAt: q.createdAt ? new Date(q.createdAt).toISOString() : new Date().toISOString(),
-          isRead: Boolean(q.isRead),
-          answersCount: (q.answers || []).length,
+          isRead,
+          answersCount,
         });
       });
     });

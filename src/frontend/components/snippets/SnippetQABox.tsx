@@ -54,10 +54,11 @@ export const SnippetQABox: React.FC<{
     if (data.success) {
       setQuestions(qs => qs.map(q => q._id === qId ? { ...q, answers: [...q.answers, data.data] } : q));
       setAnswers(a => ({ ...a, [qId]: "" }));
-      fetch("/api/notifications/questions", {
+      await fetch("/api/notifications/questions", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ snippetId, questionId: qId }),
       }).catch(() => {});
+      window.dispatchEvent(new Event("notifications_updated"));
     }
   };
 
