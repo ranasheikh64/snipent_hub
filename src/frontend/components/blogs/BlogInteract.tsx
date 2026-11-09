@@ -6,15 +6,18 @@ import { Send, Heart, MessageCircle } from "lucide-react";
 import { BlogComment } from "@/frontend/types/blog";
 import { CommentItem } from "./CommentItem";
 
-export const BlogInteract: React.FC<{ blogId: string; initialLikes?: number; isLiked?: boolean }> = ({
-  blogId, initialLikes = 0, isLiked = false,
-}) => {
+export const BlogInteract: React.FC<{
+  blogId: string;
+  initialLikes?: number;
+  initialCommentsCount?: number;
+  isLiked?: boolean;
+}> = ({ blogId, initialLikes = 0, initialCommentsCount = 0, isLiked = false }) => {
   const { user } = useAuth();
   const [comments, setComments] = useState<BlogComment[]>([]);
   const [newComment, setNewComment] = useState("");
   const [likesCount, setLikesCount] = useState(initialLikes);
   const [liked, setLiked] = useState(isLiked);
-  const [showComments, setShowComments] = useState(false);
+  const [showComments, setShowComments] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const loadComments = () => {
@@ -24,8 +27,8 @@ export const BlogInteract: React.FC<{ blogId: string; initialLikes?: number; isL
   };
 
   useEffect(() => {
-    if (showComments) loadComments();
-  }, [blogId, showComments]);
+    loadComments();
+  }, [blogId]);
 
   const handleLikeBlog = async () => {
     if (!user) return;
@@ -72,21 +75,23 @@ export const BlogInteract: React.FC<{ blogId: string; initialLikes?: number; isL
     if (res.ok) loadComments();
   };
 
+  const totalComments = comments.length > 0 ? comments.length : initialCommentsCount;
+
   return (
     <div className="border-t-2 border-black pt-4 space-y-3">
       <div className="flex items-center gap-4">
         <button onClick={handleLikeBlog} className={`flex items-center gap-1.5 text-xs font-bold border border-black px-3 py-1.5 cursor-pointer ${liked ? "bg-red-500 text-white" : "bg-white hover:bg-red-50"}`}>
           <Heart className={`w-3.5 h-3.5 ${liked ? "fill-current" : ""}`} /> {likesCount} Likes
         </button>
-        <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 text-xs font-bold border border-black px-3 py-1.5 bg-white hover:bg-[#F5F3FF] cursor-pointer">
-          <MessageCircle className="w-3.5 h-3.5 text-[#7C3AED]" /> {comments.length} Comments
+        <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1.5 text-xs font-bold border border-black px-3 py-1.5 bg-[#F5F3FF] hover:bg-white cursor-pointer">
+          <MessageCircle className="w-3.5 h-3.5 text-[#7C3AED]" /> {totalComments} Comments
         </button>
       </div>
 
       {showComments && (
         <div className="space-y-3">
           <div className="space-y-2 max-h-60 overflow-y-auto">
-            {comments.length === 0 && <p className="text-xs font-mono text-neutral-400 text-center py-3">No comments yet.</p>}
+            {comments.length === 0 && <p className="text-xs font-mono text-neutral-400 text-center py-3">No comments yet. Be the first to comment!</p>}
             {comments.map((c) => (
               <CommentItem
                 key={c._id} c={c} userId={user?.id}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { BlogPost } from "@/frontend/types/blog";
 import { BlogInteract } from "./BlogInteract";
 import { X, Clock, User, Calendar } from "lucide-react";
@@ -48,7 +48,12 @@ export const BlogDetailModal: React.FC<BlogDetailModalProps> = ({ blog, onClose 
             ))}
           </div>
 
-          <BlogInteract blogId={blogId} initialLikes={blog.likes?.length || 0} isLiked={isLiked} />
+          <BlogInteract
+            blogId={blogId}
+            initialLikes={blog.likes?.length || 0}
+            initialCommentsCount={blog.comments?.length || 0}
+            isLiked={isLiked}
+          />
         </div>
       </div>
     </div>
