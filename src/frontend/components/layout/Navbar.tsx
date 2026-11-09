@@ -6,14 +6,20 @@ import Image from "next/image";
 import { BrutalistButton } from "@/frontend/components/ui/BrutalistButton";
 import { useAuth } from "@/frontend/hooks/useAuth";
 import { AuthModal } from "@/frontend/components/auth/AuthModal";
+import { QuestionNotificationBell } from "./QuestionNotificationBell";
 import { Plus, Terminal, BookOpen, Users, LogOut, User } from "lucide-react";
 
 interface NavbarProps {
   onOpenNewSnippet: () => void;
   onOpenQuickNotes: () => void;
+  onSelectSnippetNotification?: (snippetId: string) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenNewSnippet, onOpenQuickNotes }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  onOpenNewSnippet,
+  onOpenQuickNotes,
+  onSelectSnippetNotification,
+}) => {
   const { user, logout } = useAuth();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
@@ -47,6 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewSnippet, onOpenQuickNot
         <div className="flex items-center gap-2.5">
           {user ? (
             <div className="flex items-center gap-2">
+              <QuestionNotificationBell onSelectNotification={onSelectSnippetNotification} />
               <Link
                 href={`/profile/${user.id}`}
                 className="text-xs font-mono font-bold uppercase bg-neutral-100 hover:bg-[#F5F3FF] px-2.5 py-1 border border-black flex items-center gap-1 cursor-pointer transition-colors"

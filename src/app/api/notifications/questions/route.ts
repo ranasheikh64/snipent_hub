@@ -1,0 +1,51 @@
+import { NextRequest, NextResponse } from "next/server";
+import { AuthService } from "@/backend/services/authService";
+import connectDB from "@/backend/config/db";
+import { SnippetModel } from "@/backend/models/Snippet";
+
+export async function GET(req: NextRequest) {
+  const token = req.cookies.get("token")?.value;
+  const user = token ? AuthService.verifyToken(token) : null;
+  if (!user) return NextResponse.json({ success: false, data: [] });
+
+  try {
+    await connectDB();
+    // Find snippets created by this user that have questions
+    const snippets = await SnippetModel.find({
+      $or: [{ authorId: user.id }, { author: user.name }],
+      "questions.0": { $exists: true },
+    })
+      .select("_id title questions")
+      .lean();
+
+    const notifications: Array<{
+      snippetId: string;
+      snippetTitle: string;
+      questionId: string;
+      questionAuthor: string;
+      questionContent: string;
+      createdAt: string;
+      answersCount: number;
+    }> = [];
+
+    snippets.forEach((s: any) => {
+      (s.questions || []).forEach((q: any) => {
+        notifications.push({
+          snippetId: s._id.toString(),
+          snippetTitle: s.title,
+          questionId: q._id.toString(),
+          questionAuthor: q.author,
+          questionContent: q.content,
+          createdAt: q.createdAt ? new Date(q.createdAt).toISOString() : new Date().toISOString(),
+          answersCount: (q.answers || []).length,
+        });
+      });
+    });
+
+    notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    return NextResponse.json({ success: true, data: notifications });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  }
+}
