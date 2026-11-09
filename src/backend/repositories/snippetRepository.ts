@@ -22,6 +22,7 @@ export class SnippetRepository {
         tags: doc.tags || [],
         files: doc.files || [],
         author: doc.author || "Rana Sheikh",
+        authorId: doc.authorId,
         isPublic: doc.isPublic ?? true,
         copyCount: doc.copyCount || 0,
         starsCount: doc.starsCount || 0,

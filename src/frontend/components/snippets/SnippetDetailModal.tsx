@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { SnippetItem } from "@/frontend/types/snippet";
 import { CodeTabsViewer } from "./CodeTabsViewer";
+import { SnippetQABox } from "./SnippetQABox";
 import { GithubIcon } from "@/frontend/components/ui/GithubIcon";
 import { X, Calendar, User, Eye, Download, GitFork, Play } from "lucide-react";
 
@@ -92,6 +93,7 @@ export const SnippetDetailModal: React.FC<SnippetDetailModalProps> = ({ snippet,
           </div>
 
           <CodeTabsViewer files={snippet.files} snippetId={snippet.id} />
+          <SnippetQABox snippetId={snippet.id} />
           <div className="flex flex-wrap gap-1.5 pt-2">
             {snippet.tags.map((tag, idx) => (
               <span key={idx} className="bg-neutral-200 text-black text-[11px] font-mono px-2 py-0.5 border border-black">#{tag}</span>

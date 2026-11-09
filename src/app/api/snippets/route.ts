@@ -33,7 +33,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const created = await SnippetService.createSnippet(body);
+    const token = request.cookies.get("token")?.value;
+    const user = token ? AuthService.verifyToken(token) : null;
+
+    const created = await SnippetService.createSnippet({
+      ...body,
+      author: user?.name || body.author || "Rana Sheikh",
+      authorId: user?.id,
+    });
     return NextResponse.json({ success: true, data: created }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json(

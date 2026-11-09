@@ -60,8 +60,9 @@ export class SnippetService {
     technology: string;
     level?: "Beginner" | "Intermediate" | "Advanced";
     tags: string[];
-    files: { filename: string; language: string; code: string }[];
+    files: { filename: string; language: string; code: string; purpose?: string }[];
     author?: string;
+    authorId?: string;
     isPublic?: boolean;
   }): Promise<SnippetItem> {
     return SnippetRepository.create({
@@ -73,6 +74,7 @@ export class SnippetService {
       tags: data.tags,
       files: data.files,
       author: data.author || "Rana Sheikh",
+      authorId: data.authorId,
       isPublic: data.isPublic ?? true,
     });
   }

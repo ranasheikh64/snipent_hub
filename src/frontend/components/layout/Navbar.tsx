@@ -47,9 +47,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenNewSnippet, onOpenQuickNot
         <div className="flex items-center gap-2.5">
           {user ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold uppercase bg-neutral-100 px-2.5 py-1 border border-black flex items-center gap-1">
+              <Link
+                href={`/profile/${user.id}`}
+                className="text-xs font-mono font-bold uppercase bg-neutral-100 hover:bg-[#F5F3FF] px-2.5 py-1 border border-black flex items-center gap-1 cursor-pointer transition-colors"
+                title="View My Profile"
+              >
                 <User className="w-3 h-3 text-[#7C3AED]" /> {user.name}
-              </span>
+              </Link>
               <button onClick={() => logout()} title="Logout" className="p-1.5 border border-black hover:bg-neutral-100 cursor-pointer">
                 <LogOut className="w-3.5 h-3.5" />
               </button>

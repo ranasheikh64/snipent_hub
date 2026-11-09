@@ -1,5 +1,12 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export interface IBlogComment {
+  author: string;
+  authorId: string;
+  content: string;
+  createdAt: Date;
+}
+
 export interface IBlog extends Document {
   title: string;
   slug: string;
@@ -9,11 +16,21 @@ export interface IBlog extends Document {
   category: string;
   tags: string[];
   author: string;
+  authorId?: string;
   readTime: string;
   isPublished: boolean;
+  likes: string[];
+  comments: IBlogComment[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const BlogCommentSchema = new Schema<IBlogComment>({
+  author: { type: String, required: true },
+  authorId: { type: String, required: true },
+  content: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+});
 
 const BlogSchema = new Schema<IBlog>(
   {
@@ -25,12 +42,14 @@ const BlogSchema = new Schema<IBlog>(
     category: { type: String, default: "General" },
     tags: [{ type: String }],
     author: { type: String, default: "Rana Sheikh" },
+    authorId: { type: String, default: "" },
     readTime: { type: String, default: "5 min read" },
     isPublished: { type: Boolean, default: true },
+    likes: [{ type: String }],
+    comments: [BlogCommentSchema],
   },
   { timestamps: true }
 );
 
 export const BlogModel: Model<IBlog> =
   mongoose.models.Blog || mongoose.model<IBlog>("Blog", BlogSchema);
-
