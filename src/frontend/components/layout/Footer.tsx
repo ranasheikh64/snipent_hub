@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import logoImg from "../../../../public/logo-full.png";
 
 export const Footer: React.FC = () => {
   return (
@@ -7,13 +8,12 @@ export const Footer: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-neutral-300">
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2.5 mb-3">
-              <div className="w-8 h-8 relative rounded-lg overflow-hidden border-2 border-black shadow-[2px_2px_0px_#7C3AED]">
-                <Image src="/only_logo.png" alt="SnippetHub" fill className="object-cover" />
-              </div>
-              <span className="font-black text-xl tracking-tight text-black">
-                Snippet<span className="text-[#7C3AED]">Hub</span>
-              </span>
+            <div className="flex items-center mb-3">
+              <Image
+                src={logoImg}
+                alt="SnippetHub"
+                className="h-10 w-auto object-contain"
+              />
             </div>
             <p className="text-xs text-neutral-600 max-w-sm pl-3 border-l-2 border-[#7C3AED]">
               Save • Organize • Reuse • Share.

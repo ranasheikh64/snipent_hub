@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import logoImg from "../../../../public/logo-full.png";
 import { BrutalistButton } from "@/frontend/components/ui/BrutalistButton";
 import { useAuth } from "@/frontend/hooks/useAuth";
 import { AuthModal } from "@/frontend/components/auth/AuthModal";
@@ -26,13 +27,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="w-full bg-white border-b-2 border-black sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-10 h-10 relative rounded-xl overflow-hidden border-2 border-black shadow-[2px_2px_0px_#7C3AED]">
-            <Image src="/only_logo.png" alt="SnippetHub" fill className="object-cover" />
-          </div>
-          <span className="font-black text-2xl tracking-tight text-black">
-            Snippet<span className="text-[#7C3AED]">Hub</span>
-          </span>
+        <Link href="/" className="flex items-center group py-1" title="SnippetHub">
+          <Image
+            src={logoImg}
+            alt="SnippetHub - Save • Organize • Reuse • Share"
+            priority
+            className="h-11 sm:h-12 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-5">
