@@ -20,15 +20,28 @@ export class SnippetService {
     }
 
     const filtered = all.filter((s) => {
-      const matchTopic =
-        topic === "ALL" ||
-        (topic === "FAVORITES"
-          ? (s.starsCount || 0) > 0
-          : s.technology.toUpperCase() === topic ||
-            s.category.toUpperCase().includes(topic) ||
-            s.tags.some((t) => t.toUpperCase() === topic));
+      const sTech = (s.technology || "").toUpperCase();
+      const sCat = (s.category || "").toUpperCase();
+      const sTags = (s.tags || []).map((t) => t.toUpperCase());
 
-      const matchLevel = !level || s.level?.toUpperCase() === level.toUpperCase();
+      let matchTopic = true;
+      if (topic === "ALL") {
+        matchTopic = true;
+      } else if (topic === "FAVORITES") {
+        matchTopic = (s.starsCount || 0) > 0;
+      } else if (topic === "FLUTTER") {
+        matchTopic = sTech === "FLUTTER" || sTags.includes("FLUTTER");
+      } else if (topic === "BACKEND") {
+        matchTopic = sTech === "BACKEND" || sTech === "NODE.JS" || sTech === "PYTHON" || sTech === "GO" || sCat.includes("BACKEND") || sTags.includes("BACKEND") || sTags.includes("NODE.JS");
+      } else if (topic === "REACT") {
+        matchTopic = sTech === "REACT" || sTech === "NEXT.JS" || sTags.includes("REACT") || sTags.includes("NEXT.JS");
+      } else if (topic === "FULLSTACK") {
+        matchTopic = sTech === "FULLSTACK" || sCat.includes("FULLSTACK") || sTags.includes("FULLSTACK");
+      } else {
+        matchTopic = sTech === topic || sCat.includes(topic) || sTags.includes(topic);
+      }
+
+      const matchLevel = !level || (s.level || "BEGINNER").toUpperCase() === level.toUpperCase();
 
       const q = search?.toLowerCase().trim();
       const matchSearch =
