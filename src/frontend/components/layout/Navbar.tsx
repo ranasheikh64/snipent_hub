@@ -12,7 +12,7 @@ import { Plus, Terminal, BookOpen, Users, LogOut, User } from "lucide-react";
 interface NavbarProps {
   onOpenNewSnippet: () => void;
   onOpenQuickNotes: () => void;
-  onSelectSnippetNotification?: (snippetId: string) => void;
+  onSelectSnippetNotification?: (snippetId: string, questionId: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({

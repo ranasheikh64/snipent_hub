@@ -20,6 +20,7 @@ function HomeContent() {
   const [selectedLevel, setSelectedLevel] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSnippet, setActiveSnippet] = useState<SnippetItem | null>(null);
+  const [highlightQuestionId, setHighlightQuestionId] = useState<string | null>(null);
   const [isNewSnippetOpen, setIsNewSnippetOpen] = useState(false);
   const [isNotesOpen, setIsNotesOpen] = useState(false);
   const searchParams = useSearchParams();
@@ -41,15 +42,17 @@ function HomeContent() {
 
   useEffect(() => { fetchSnippets(); }, [fetchSnippets]);
 
-  const openSnippet = (id: string) => {
-    const existing = snippets.find((s) => s.id === id);
+  const openSnippet = (snippetId: string, questionId?: string) => {
+    if (questionId) setHighlightQuestionId(questionId);
+    const existing = snippets.find((s) => s.id === snippetId);
     if (existing) setActiveSnippet(existing);
-    else fetch(`/api/snippets/${id}`).then((r) => r.json()).then((d) => d.success && setActiveSnippet({ ...d.data, id: d.data._id }));
+    else fetch(`/api/snippets/${snippetId}`).then((r) => r.json()).then((d) => d.success && setActiveSnippet({ ...d.data, id: d.data._id }));
   };
 
   useEffect(() => {
     const sId = searchParams?.get("snippetId");
-    if (sId) openSnippet(sId);
+    const qId = searchParams?.get("questionId");
+    if (sId) openSnippet(sId, qId || undefined);
   }, [searchParams]);
 
   const topicCounts = useMemo(() => {
@@ -65,11 +68,17 @@ function HomeContent() {
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 pt-10 w-full">
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           <SnippetFilterSidebar selectedTopic={selectedTopic} onSelectTopic={setSelectedTopic} selectedLevel={selectedLevel} onSelectLevel={setSelectedLevel} topicCounts={topicCounts} />
-          <SnippetList snippets={snippets} isLoading={isLoading} onOpenDetails={setActiveSnippet} onResetFilters={() => { setSelectedTopic("ALL"); setSelectedLevel(""); setSearchQuery(""); }} />
+          <SnippetList snippets={snippets} isLoading={isLoading} onOpenDetails={(s) => { setHighlightQuestionId(null); setActiveSnippet(s); }} onResetFilters={() => { setSelectedTopic("ALL"); setSelectedLevel(""); setSearchQuery(""); }} />
         </div>
       </main>
       <Footer />
-      <SnippetDetailModal snippet={activeSnippet} onClose={() => setActiveSnippet(null)} onForked={fetchSnippets} />
+      <SnippetDetailModal
+        snippet={activeSnippet}
+        onClose={() => { setActiveSnippet(null); setHighlightQuestionId(null); }}
+        onForked={fetchSnippets}
+        initialOpenQA={Boolean(highlightQuestionId)}
+        highlightQuestionId={highlightQuestionId}
+      />
       <NewSnippetModal isOpen={isNewSnippetOpen} onClose={() => setIsNewSnippetOpen(false)} onCreated={fetchSnippets} />
       <QuickNotesModal isOpen={isNotesOpen} onClose={() => setIsNotesOpen(false)} />
       <CommandPalette snippets={snippets} onSelectSnippet={setActiveSnippet} onOpenNewSnippet={() => setIsNewSnippetOpen(true)} />

@@ -10,13 +10,10 @@ export async function GET(req: NextRequest) {
 
   try {
     await connectDB();
-    // Find snippets created by this user that have questions
     const snippets = await SnippetModel.find({
       $or: [{ authorId: user.id }, { author: user.name }],
       "questions.0": { $exists: true },
-    })
-      .select("_id title questions")
-      .lean();
+    }).select("_id title questions").lean();
 
     const notifications: Array<{
       snippetId: string;
@@ -25,6 +22,7 @@ export async function GET(req: NextRequest) {
       questionAuthor: string;
       questionContent: string;
       createdAt: string;
+      isRead: boolean;
       answersCount: number;
     }> = [];
 
@@ -37,14 +35,36 @@ export async function GET(req: NextRequest) {
           questionAuthor: q.author,
           questionContent: q.content,
           createdAt: q.createdAt ? new Date(q.createdAt).toISOString() : new Date().toISOString(),
+          isRead: Boolean(q.isRead),
           answersCount: (q.answers || []).length,
         });
       });
     });
 
     notifications.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
     return NextResponse.json({ success: true, data: notifications });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  const token = req.cookies.get("token")?.value;
+  const user = token ? AuthService.verifyToken(token) : null;
+  if (!user) return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+
+  try {
+    const { snippetId, questionId } = await req.json();
+    await connectDB();
+    const snippet = await SnippetModel.findById(snippetId);
+    if (!snippet) return NextResponse.json({ success: false, message: "Not found" }, { status: 404 });
+
+    const q = snippet.questions.find((item: any) => item._id.toString() === questionId);
+    if (q) {
+      q.isRead = true;
+      await snippet.save();
+    }
+    return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }

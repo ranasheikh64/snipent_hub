@@ -20,6 +20,7 @@ export interface ISnippetQuestion {
   authorId: string;
   content: string;
   createdAt: Date;
+  isRead?: boolean;
   answers: ISnippetAnswer[];
 }
 
@@ -60,6 +61,7 @@ const QuestionSchema = new Schema<ISnippetQuestion>({
   authorId: { type: String, required: true },
   content: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
+  isRead: { type: Boolean, default: false },
   answers: [AnswerSchema],
 });
 

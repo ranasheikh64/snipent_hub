@@ -11,9 +11,13 @@ interface SnippetDetailModalProps {
   snippet: SnippetItem | null;
   onClose: () => void;
   onForked?: () => void;
+  initialOpenQA?: boolean;
+  highlightQuestionId?: string | null;
 }
 
-export const SnippetDetailModal: React.FC<SnippetDetailModalProps> = ({ snippet, onClose, onForked }) => {
+export const SnippetDetailModal: React.FC<SnippetDetailModalProps> = ({
+  snippet, onClose, onForked, initialOpenQA, highlightQuestionId,
+}) => {
   const [forking, setForking] = useState(false);
   const [forkedMsg, setForkedMsg] = useState(false);
   if (!snippet) return null;
@@ -29,9 +33,7 @@ export const SnippetDetailModal: React.FC<SnippetDetailModalProps> = ({ snippet,
       const blob = new Blob([f.code], { type: "text/plain" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url;
-      a.download = f.filename;
-      a.click();
+      a.href = url; a.download = f.filename; a.click();
       URL.revokeObjectURL(url);
     });
   };
@@ -41,9 +43,7 @@ export const SnippetDetailModal: React.FC<SnippetDetailModalProps> = ({ snippet,
     try {
       const res = await fetch(`/api/snippets/${snippet.id}/fork`, { method: "POST" });
       if (res.ok) {
-        setForkedMsg(true);
-        setTimeout(() => setForkedMsg(false), 3000);
-        onForked?.();
+        setForkedMsg(true); setTimeout(() => setForkedMsg(false), 3000); onForked?.();
       }
     } finally { setForking(false); }
   };
@@ -93,7 +93,7 @@ export const SnippetDetailModal: React.FC<SnippetDetailModalProps> = ({ snippet,
           </div>
 
           <CodeTabsViewer files={snippet.files} snippetId={snippet.id} />
-          <SnippetQABox snippetId={snippet.id} />
+          <SnippetQABox snippetId={snippet.id} initialOpen={initialOpenQA} highlightQuestionId={highlightQuestionId} />
           <div className="flex flex-wrap gap-1.5 pt-2">
             {snippet.tags.map((tag, idx) => (
               <span key={idx} className="bg-neutral-200 text-black text-[11px] font-mono px-2 py-0.5 border border-black">#{tag}</span>
