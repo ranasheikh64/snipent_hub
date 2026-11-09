@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { UserPayload } from "@/backend/services/authService";
+import { UserPayload } from "@/frontend/types/user";
 
 interface AuthContextType {
   user: UserPayload | null;

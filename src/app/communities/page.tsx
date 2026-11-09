@@ -8,7 +8,7 @@ import { CommunityCard } from "@/frontend/components/community/CommunityCard";
 import { CreateCommunityModal } from "@/frontend/components/community/CreateCommunityModal";
 import { CommunityDetailModal } from "@/frontend/components/community/CommunityDetailModal";
 import { NewSnippetModal } from "@/frontend/components/snippets/NewSnippetModal";
-import { CommunityItem } from "@/backend/data/initialCommunities";
+import { CommunityItem } from "@/frontend/types/community";
 import { ArrowLeft, Plus } from "lucide-react";
 import { BrutalistButton } from "@/frontend/components/ui/BrutalistButton";
 

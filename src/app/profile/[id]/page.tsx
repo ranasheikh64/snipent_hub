@@ -1,40 +1,14 @@
-"use client";
+import { ProfileClient } from "./ProfileClient";
 
-import React, { useState, useEffect, Suspense } from "react";
-import { useParams } from "next/navigation";
-import { Navbar } from "@/frontend/components/layout/Navbar";
-import { Footer } from "@/frontend/components/layout/Footer";
-import { ProfileHeader } from "@/frontend/components/profile/ProfileHeader";
-import { ProfileContent } from "@/frontend/components/profile/ProfileContent";
-
-function ProfileInner() {
-  const params = useParams();
-  const userId = params?.id as string;
-  const [profileUser, setProfileUser] = useState<any>(null);
-
-  useEffect(() => {
-    if (!userId) return;
-    fetch(`/api/profile/${userId}`)
-      .then((r) => r.json())
-      .then((d) => d.success && setProfileUser(d.data.user));
-  }, [userId]);
-
-  return (
-    <>
-      <ProfileHeader profileUser={profileUser} />
-      <ProfileContent userId={userId} />
-    </>
-  );
+export function generateStaticParams() {
+  return [{ id: "me" }];
 }
 
-export default function ProfilePage() {
-  return (
-    <div className="min-h-screen bg-[#FDFBF7] flex flex-col font-sans">
-      <Navbar onOpenNewSnippet={() => {}} onOpenQuickNotes={() => {}} />
-      <Suspense fallback={<div className="p-8 text-center font-mono">Loading profile...</div>}>
-        <ProfileInner />
-      </Suspense>
-      <Footer />
-    </div>
-  );
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  return <ProfileClient userId={id} />;
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CommunityItem } from "@/backend/data/initialCommunities";
+import { CommunityItem } from "@/frontend/types/community";
 import { Users, Code, ArrowRight, Hash } from "lucide-react";
 
 interface CommunityCardProps {

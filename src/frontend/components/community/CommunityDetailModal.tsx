@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { CommunityItem } from "@/backend/data/initialCommunities";
+import { CommunityItem } from "@/frontend/types/community";
 import { SnippetItem } from "@/frontend/types/snippet";
 import { CommunitySnippetList } from "./CommunitySnippetList";
 import { useAuth } from "@/frontend/hooks/useAuth";
