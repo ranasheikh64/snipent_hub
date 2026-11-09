@@ -3,13 +3,16 @@ import { AuthProvider } from "@/frontend/hooks/useAuth";
 import { ApiInterceptor } from "@/frontend/components/layout/ApiInterceptor";
 import "./globals.css";
 
+const isExport = process.env.NEXT_EXPORT === "true" || process.env.GITHUB_ACTIONS === "true";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? (isExport ? "/snipent_hub" : "");
+
 export const metadata: Metadata = {
   title: "SnippetHub - Save • Organize • Reuse • Share",
   description: "Personal and open-source code snippet library for Flutter, Web, and Backend developers.",
   icons: {
-    icon: "/only_logo.png",
-    shortcut: "/only_logo.png",
-    apple: "/only_logo.png",
+    icon: `${basePath}/only_logo.png`,
+    shortcut: `${basePath}/only_logo.png`,
+    apple: `${basePath}/only_logo.png`,
   },
 };
 
